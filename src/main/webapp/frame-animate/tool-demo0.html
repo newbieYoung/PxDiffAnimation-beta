@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>计算两张图片的像素差</title>
+</head>
+<body>
+    <canvas name="canvas1" width="20" height="20" style="width:40%;"></canvas>
+    <canvas name="canvas2" width="20" height="20" style="width:40%;"></canvas>
+    <textarea name="code"></textarea>
+    <script type="text/javascript">
+        var code = '';
+        var textarea = document.querySelector('textarea[name=code]');
+        //前一帧
+        var data1;
+        var canvas1 = document.querySelector('canvas[name=canvas1]');
+        var context1 = canvas1.getContext('2d');
+        var image1 = new Image();
+        image1.src = './images/test/test1.jpg';
+        image1.onload = function(){
+            context1.drawImage(image1,0,0,canvas1.width,canvas1.height);//导入图片
+            data1 = context1.getImageData(0,0,canvas1.width,canvas1.height);//获取像素数据
+        };
+        //后一帧
+       	var data2;
+        var canvas2 = document.querySelector('canvas[name=canvas2]');
+        var context2 = canvas2.getContext('2d');
+        var image2 = new Image();
+        image2.src = './images/test/test2.jpg';
+        image2.onload = function(){
+            context2.drawImage(image2,0,0,canvas2.width,canvas2.height);//导入图片
+            data2 = context2.getImageData(0,0,canvas2.width,canvas2.height);//获取像素数据
+        }
+
+        var interval = setInterval(function(){
+            if(data1.data.length&&data2.data.length){
+                if(interval){
+                    clearInterval(interval);
+                }
+                //以下计算像素差是建立在canvas尺寸相同的情况下的（不同尺寸的canvas计算像素差，需要进行换算）
+                var arr1 = data1.data;
+                var arr2 = data2.data;
+                var length = arr1.length;//基于上边的假设data1.data和data2.data的数组长度应该是一致的
+                for(var i=0;i<arr1.length;i++){
+                    code += arr1[i];
+                	/* if(arr1[i]!==arr2[i]){
+                        code += 'origin.data['+i+'] = '+arr2[i]+'\n';
+                    } */
+                }
+                textarea.innerHTML = code;
+            }
+        },1000);
+</script>
+</body>
+</html>
