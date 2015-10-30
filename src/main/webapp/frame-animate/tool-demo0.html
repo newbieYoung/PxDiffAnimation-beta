@@ -42,10 +42,9 @@
                 var arr2 = data2.data;
                 var length = arr1.length;//基于上边的假设data1.data和data2.data的数组长度应该是一致的
                 for(var i=0;i<arr1.length;i++){
-                    code += arr1[i];
-                	/* if(arr1[i]!==arr2[i]){
-                        code += 'origin.data['+i+'] = '+arr2[i]+'\n';
-                    } */
+               		if(arr1[i]!==arr2[i]){
+                        code += 'origin.data['+i+'] = '+arr2[i]+';\n';
+                    }
                 }
                 textarea.innerHTML = code;
             }
