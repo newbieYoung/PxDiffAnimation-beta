@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>计算逐帧动画的像素差，并把各帧之间的像素差整合成一张png以及位置信息文件</title>
+	<style type="text/css">
+		body{
+			margin:0;
+			padding:0;
+		}
+		canvas{
+			width:10%;
+		}
+	</style>
+</head>
+<body>
+	<script type="text/javascript">
+	var startMSecond = new Date().getTime();
+	var width = 640;//逐帧动画图片实际宽度和高度
+	var height = 1136;
+	var srcs = ['./images/three/3.png',
+	            './images/three/4.png'
+	            /*'./images/three/5.png',
+	            './images/three/6.png',
+	            './images/three/7.png',
+				'./images/three/8.png',
+				'./images/three/9.png',
+				'./images/three/10.png',
+				'./images/three/11.png',
+				'./images/three/12.png',
+				'./images/three/14.png','./images/three/15.png',
+				'./images/three/16.png','./images/three/17.png',
+				'./images/three/18.png','./images/three/19.png',
+				'./images/three/20.png','./images/three/21.png',
+				'./images/three/22.png','./images/three/23.png',
+				'./images/three/24.png','./images/three/25.png',
+				'./images/three/26.png','./images/three/27.png',
+				'./images/three/28.png','./images/three/29.png',
+				'./images/three/30.png','./images/three/31.png',
+				'./images/three/32.png','./images/three/33.png',
+				'./images/three/34.png','./images/three/35.png',
+				'./images/three/36.png','./images/three/37.png'*/
+				];//逐帧动画图片路径数组
+	var imgs = [];
+	var interval;
+	var body = document.querySelector('body');
+	for(var i=0;i<srcs.length;i++){
+		(function(index){
+			var img = new Image();
+			img.src = srcs[i];
+			img.onload = function(){
+				imgs[index] = this;
+			};
+			img.onerror = function(){
+				console.log('第'+(index+1)+'帧图片读取失败');
+			};
+		})(i);
+	}
+	var total = [];//多维素组存储像素差
+	interval = setInterval(function(){
+		if(imgs.length===srcs.length){
+			if(interval){
+                clearInterval(interval);
+            }
+            var canvasArr = [];
+            var contextArr = [];
+            var dataArr = [];
+            for(var i=0;i<imgs.length;i++){
+            	var canvas = document.createElement('canvas');
+            	canvas.id = i;
+            	canvas.width = width;
+            	canvas.height = height;
+            	body.appendChild(canvas);
+            	canvasArr.push(canvas);
+            	var context = canvas.getContext('2d');
+            	contextArr.push(context);
+            	context.drawImage(imgs[i],0,0,canvas.width,canvas.height);//导入图片
+            }
+            for(var i=0;i<imgs.length;i++){
+            	var canvas = canvasArr[i];
+            	var context = contextArr[i];
+            	dataArr.push(context.getImageData(0,0,canvas.width,canvas.height).data);
+            }
+            for(var i=0;i<imgs.length-1;i++){
+            	total[i] = new Array(dataArr[i].length);
+            }
+            //整合像素差
+            for(var i=0;i<dataArr.length-1;i++){
+            	var first = dataArr[i];
+            	var second = dataArr[i+1];
+            	for(var j=0;j<first.length;j++){
+            		if(first[j]!=second[j]){
+            			total[i][j] = second[j];
+            		}
+            	}
+            }
+            //整理像素差
+            var final = new Array(dataArr[0].length*(imgs.length-1));
+            for(var i=0;i<imgs.length-1;i++){
+            	for(var j=0;j<total[0].length;j++){
+            		final[i*total[0].length+j] = total[i][j];
+            	}
+            }
+            console.log(final.length);//貌似chrome中js数组的最大长度为1亿左右
+            var value = 0;
+            for(var i=0;i<final.length;i++){
+            	if(final[i]!=null){
+            		value++;
+            	}
+            }
+            console.log(value);
+            var initLength = final.length;
+            var index = 0;
+            var no = 0;
+            var start = 0;
+            var space = 0;
+            var diff = [];
+            while(index<initLength){
+            	if(final[no]==null){
+            		if(space===0){
+            			start = no;
+            		}
+            		space++;
+            		no++;
+            	}else{
+            		if(space>100){//100表示误差值，只要超过100位无效位则可以截取
+            			diff.push([start,space]);
+            			final.splice(start,space);
+            			space = 0;
+            			no = start+1;//截取后当前移动到start位，但是由于当前已经判断过了，所以从下一位开始
+            		}else{
+            			space = 0;
+            			no++;
+            		}
+            	}
+            	index++;
+            	if(index===initLength){
+            		diff.push([start,space]);
+        			final.splice(start,space);
+        			space = 0;
+        			no = start;
+            	}
+            }
+            var endMSecond = new Date().getTime();
+            console.log('end at '+(endMSecond-startMSecond)/1000+'\'s latter');//计算像素差耗时
+            console.log(diff.length);
+            console.log(final.length);
+            document.write(diff);//输出位置信息
+            var middle = Math.floor(Math.sqrt(final.length/4));//应该能被4整数，如果不能还要额外处理
+            var num1,num2;
+            for(var i=middle;i>=1;i--){
+            	var temp = final.length/i/4;
+            	if(Math.floor(temp)==temp){
+            		num1 = temp;
+            		num2 = i;
+            		break;
+            	}
+            }
+            console.log(num1+' '+num2);
+            var result = document.createElement('canvas');
+            result.width = num1;
+            result.height = num2;
+            body.appendChild(result);
+            var resultContext = result.getContext('2d');
+            var imageData = context.getImageData(0,0,num1,num2)
+            for(var i=0;i<final.length;i++){
+            	imageData.data[i] = final[i];
+            }
+            resultContext.putImageData(imageData, 0, 0, 0, 0, num1, num2);
+          	/* //把diff信息存储到localStorage中
+            var str = '';
+            for(var i=0;i<diff.length;i++){
+            	str += diff[i][0]+','+diff[i][1]+',';
+            }
+            str = str.substring(0,str.length-1);
+            var now = new Date().getTime();
+            window.localStorage.setItem(now+'-diff',str);
+            //测试保存数据是否存在丢失情况
+            var tempDiffStr = window.localStorage.getItem(now+'-diff');
+            console.log(tempDiffStr===str); */
+		}
+	},1000);
+
+	</script>
+</body>
+</html>

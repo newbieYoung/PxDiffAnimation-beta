@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>根据位置信息文件和像素差png还原图片</title>
+	<script type="text/javascript" src="./js/test.js"></script>
+</head>
+<body>
+	<script type="text/javascript">
+		var startMSecond = new Date().getTime();
+		var body = document.querySelector('body');
+		var data;
+
+		var img1 = new Image();
+		var imageData1;
+		var canvas1;
+		var context1;
+		img1.src = './images/three/3.png';
+		img1.onload = function(){
+			canvas1 = document.createElement('canvas');//第一帧canvas
+			canvas1.width = 640;
+			canvas1.height = 1136;
+			context1 = canvas1.getContext('2d');
+			context1.drawImage(this,0,0,640,1136);//导入图片
+			imageData1 = context1.getImageData(0,0,640,1136);//获取像素数据
+			console.log(imageData1.data.length);
+			body.appendChild(canvas1);
+			setTimeout(function(){
+				var img = new Image();
+				img.src = './images/test/test3.png';
+				img.onload = function(){
+					var canvas = document.createElement('canvas');//像素差canvas
+					canvas.width = 757;
+					canvas.height = 18;
+					var context = canvas.getContext('2d');
+					context.drawImage(this,0,0,757,18);//导入图片
+					data = context.getImageData(0,0,757,18).data;//获取像素数据
+					//Uint8ClampedArray转换成Array
+					var dataArr = new Array(data.length);
+					for(var i=0;i<data.length;i++){
+						dataArr[i] = data[i];
+					}
+					for(var i=position.length-2;i>=0;i=i-2){
+						var start = position[i];
+						var space = position[i+1];
+						var arr = new Array(space);
+						var pre = dataArr.splice(0,start);
+						var last = dataArr.splice(0,dataArr.length);
+						dataArr = pre.concat(arr);
+						dataArr = dataArr.concat(last);
+					}
+					console.log(dataArr.length);
+					for(var i=0;i<dataArr.length;i++){
+						if(dataArr[i]){
+							imageData1.data[i] = dataArr[i];
+						}
+					}
+					context1.clearRect(0, 0, 640, 1136);
+    				context1.putImageData(imageData1, 0, 0, 0, 0, 640, 1136);
+    				var endMSecond = new Date().getTime();
+    				console.log('end at '+(endMSecond-startMSecond)/1000+'\'s latter');//还原像素差耗时
+				};
+			},2000)
+		};
+	</script>
+</body>
+</html>

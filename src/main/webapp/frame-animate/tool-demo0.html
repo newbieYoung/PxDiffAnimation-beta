@@ -20,6 +20,7 @@
         image1.onload = function(){
             context1.drawImage(image1,0,0,canvas1.width,canvas1.height);//导入图片
             data1 = context1.getImageData(0,0,canvas1.width,canvas1.height);//获取像素数据
+            console.log(data1);
         };
         //后一帧
        	var data2;
