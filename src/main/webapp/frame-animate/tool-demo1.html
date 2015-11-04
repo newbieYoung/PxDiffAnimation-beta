@@ -9,7 +9,7 @@
 			padding:0;
 		}
 		canvas{
-			height:10px;
+			height:100px;
 		}
 	</style>
 </head>
@@ -146,29 +146,29 @@
             var endMSecond = new Date().getTime();
             console.log('耗时：'+(endMSecond-startMSecond)/1000+'秒');//计算像素差耗时
             console.log('去除无效数据段后的像素差数组长度为：'+final.length);
-            //document.write(diff);//输出位置信息
-            var middle = Math.floor(Math.sqrt(final.length/4));//应该能被4整数，如果不能还要额外处理
-            var num1,num2;
-            for(var i=middle;i>=1;i--){
-            	var temp = final.length/i/4;
-            	if(Math.floor(temp)==temp){
-            		num1 = temp;
-            		num2 = i;
-            		break;
-            	}
+            console.log('去除无效数据段时生产的位置信息数组长度为：'+diff.length);
+            //整理输出像素差png的宽度和高度，尽可能的让宽度和高度相近
+            var num3 = final.length;
+            if(num3/4!==Math.floor(num3/4)){
+                  num3 = (Math.floor(num3/4)+1)*4;
             }
+            var num1 = Math.floor(Math.sqrt(num3/4));
+            var num2 = Math.floor(num3/4/num1)+1;
+            diff.push([final.length,num1*num2*4-final.length]);
+            final.length = num1*num2*4;
+            document.write(diff);
             console.log(num1+' '+num2);
             var result = document.createElement('canvas');
             result.width = num1;
             result.height = num2;
             body.appendChild(result);
             var resultContext = result.getContext('2d');
-            var imageData = context.getImageData(0,0,num1,num2)
-            for(var i=0;i<final.length;i++){
+            var imageData = context.getImageData(0,0,num1,num2);
+            for(var i=0;i<num3;i++){//忽略补位数据
             	imageData.data[i] = final[i];
             }
             resultContext.putImageData(imageData, 0, 0, 0, 0, num1, num2);
-          	/* //把diff信息存储到localStorage中
+            /* //把diff信息存储到localStorage中
             var str = '';
             for(var i=0;i<diff.length;i++){
             	str += diff[i][0]+','+diff[i][1]+',';

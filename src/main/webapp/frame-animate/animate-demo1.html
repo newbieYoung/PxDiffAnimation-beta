@@ -29,18 +29,19 @@
 				img.src = './images/test/test3.png';
 				img.onload = function(){
 					var canvas = document.createElement('canvas');//像素差canvas
-					canvas.width = 757;
-					canvas.height = 18;
+					canvas.width = 116;
+					canvas.height = 118;
 					var context = canvas.getContext('2d');
-					context.drawImage(this,0,0,757,18);//导入图片
-					data = context.getImageData(0,0,757,18).data;//获取像素数据
+					context.drawImage(this,0,0,116,118);//导入图片
+					data = context.getImageData(0,0,116,118).data;//获取像素数据
 					//Uint8ClampedArray转换成Array
 					var dataArr = new Array(data.length);
 					for(var i=0;i<data.length;i++){
 						dataArr[i] = data[i];
 					}
+					dataArr = dataArr.splice(0,position[position.length-2]);//去除掉输出像素差数组时为了让宽度和高度尽可能靠近增加的无效位数
 					var startMSecond = new Date().getTime();
-					for(var i=position.length-2;i>=0;i=i-2){
+					for(var i=position.length-4;i>=0;i=i-2){
 						var start = position[i];
 						var space = position[i+1];
 						var arr = new Array(space);
