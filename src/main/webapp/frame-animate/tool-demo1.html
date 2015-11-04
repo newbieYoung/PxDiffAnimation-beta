@@ -9,7 +9,7 @@
 			padding:0;
 		}
 		canvas{
-			width:10%;
+			height:10px;
 		}
 	</style>
 </head>
@@ -87,7 +87,9 @@
             //整合像素差
             for(var i=0;i<dataArr.length-1;i++){
             	var first = dataArr[i];
+                  console.log('第'+i+'帧像素数组长度为：'+first.length);
             	var second = dataArr[i+1];
+                  console.log('第'+(i+1)+'帧像素数组长度为：'+second.length);
             	for(var j=0;j<first.length;j++){
             		if(first[j]!=second[j]){
             			total[i][j] = second[j];
@@ -101,14 +103,14 @@
             		final[i*total[0].length+j] = total[i][j];
             	}
             }
-            console.log(final.length);//貌似chrome中js数组的最大长度为1亿左右
+            console.log('总像素差数组长度为：'+final.length);//貌似chrome中js数组的最大长度为1亿左右
             var value = 0;
             for(var i=0;i<final.length;i++){
             	if(final[i]!=null){
             		value++;
             	}
             }
-            console.log(value);
+            console.log('总像素差数组中有效像素点数量为：'+value);
             var initLength = final.length;
             var index = 0;
             var no = 0;
@@ -142,10 +144,9 @@
             	}
             }
             var endMSecond = new Date().getTime();
-            console.log('end at '+(endMSecond-startMSecond)/1000+'\'s latter');//计算像素差耗时
-            console.log(diff.length);
-            console.log(final.length);
-            document.write(diff);//输出位置信息
+            console.log('耗时：'+(endMSecond-startMSecond)/1000+'秒');//计算像素差耗时
+            console.log('去除无效数据段后的像素差数组长度为：'+final.length);
+            //document.write(diff);//输出位置信息
             var middle = Math.floor(Math.sqrt(final.length/4));//应该能被4整数，如果不能还要额外处理
             var num1,num2;
             for(var i=middle;i>=1;i--){

@@ -7,7 +7,6 @@
 </head>
 <body>
 	<script type="text/javascript">
-		var startMSecond = new Date().getTime();
 		var body = document.querySelector('body');
 		var data;
 
@@ -23,7 +22,7 @@
 			context1 = canvas1.getContext('2d');
 			context1.drawImage(this,0,0,640,1136);//导入图片
 			imageData1 = context1.getImageData(0,0,640,1136);//获取像素数据
-			console.log(imageData1.data.length);
+			console.log('前一帧像素数组长度：'+imageData1.data.length);
 			body.appendChild(canvas1);
 			setTimeout(function(){
 				var img = new Image();
@@ -40,6 +39,7 @@
 					for(var i=0;i<data.length;i++){
 						dataArr[i] = data[i];
 					}
+					var startMSecond = new Date().getTime();
 					for(var i=position.length-2;i>=0;i=i-2){
 						var start = position[i];
 						var space = position[i+1];
@@ -49,16 +49,19 @@
 						dataArr = pre.concat(arr);
 						dataArr = dataArr.concat(last);
 					}
-					console.log(dataArr.length);
+					console.log('还原后得到后一帧像素数组长度：'+dataArr.length);
 					for(var i=0;i<dataArr.length;i++){
 						if(dataArr[i]){
 							imageData1.data[i] = dataArr[i];
 						}
 					}
+					var endMSecond = new Date().getTime();
+					//console.log('开始时间毫秒数：'+startMSecond);
+					//console.log('结束时间毫秒数：'+endMSecond);
+					console.log('耗时：'+(endMSecond-startMSecond)/1000+'秒');//还原像素差耗时
 					context1.clearRect(0, 0, 640, 1136);
     				context1.putImageData(imageData1, 0, 0, 0, 0, 640, 1136);
-    				var endMSecond = new Date().getTime();
-    				console.log('end at '+(endMSecond-startMSecond)/1000+'\'s latter');//还原像素差耗时
+    				console.log('结束');
 				};
 			},2000)
 		};
