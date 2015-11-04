@@ -159,7 +159,7 @@
             var num2 = Math.floor(num3 / 4 / num1) + 1;
             diff.push([final.length, num1 * num2 * 4 - final.length]);
             final.length = num1 * num2 * 4;
-            document.write(diff);
+            //document.write(diff);
             console.log(num1 + ' ' + num2);
             var result = document.createElement('canvas');
             result.width = num1;
@@ -170,6 +170,7 @@
             for (var i = 0; i < num3; i++) { //忽略补位数据
                 imageData.data[i] = final[i];
             }
+            //把像素差png
             resultContext.putImageData(imageData, 0, 0, 0, 0, num1, num2);
         }
     }, 1000);

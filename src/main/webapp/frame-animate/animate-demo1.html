@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<title>根据位置信息文件和像素差png还原图片</title>
 	<script type="text/javascript" src="./js/test.js"></script>
+	<script type="text/javascript" src="./lib/doublylinkedlist.js"></script>
 </head>
 <body>
 	<script type="text/javascript">
@@ -34,13 +35,39 @@
 					var context = canvas.getContext('2d');
 					context.drawImage(this,0,0,116,118);//导入图片
 					data = context.getImageData(0,0,116,118).data;//获取像素数据
-					//Uint8ClampedArray转换成Array
-					var dataArr = new Array(data.length);
+					
+					//使用自定义数据类型DoublyLinkedList处理像素差数据
+					var startMSecond = new Date().getTime();
+					var dataList = new DoublyLinkedList();
+					for(var i=0;i<data.length;i++){
+						dataList.push(data[i]);
+					}
+					for(var i=position.length-4;i>=0;i=i-2){
+						var start = position[i];
+						var space = position[i+1];
+						for(var j=0;j<space;j++){
+							dataList.insert(start,null,true);
+						}
+					}
+					console.log('还原后得到后一帧像素数组长度：'+dataList.size());
+					var node = dataList.getHead();
+					var no = 0;
+					while(node.next){
+						if(node.value){
+							imageData1.data[no] = node.value;
+						}
+						node = node.next;
+						no++;
+					}
+					var endMSecond = new Date().getTime();
+					
+					/* //使用JS原生数组操作像素差数据
+					var startMSecond = new Date().getTime();
+					var dataArr = new Array(data.length);//Uint8ClampedArray转换成Array
 					for(var i=0;i<data.length;i++){
 						dataArr[i] = data[i];
 					}
 					dataArr = dataArr.splice(0,position[position.length-2]);//去除掉输出像素差数组时为了让宽度和高度尽可能靠近增加的无效位数
-					var startMSecond = new Date().getTime();
 					for(var i=position.length-4;i>=0;i=i-2){
 						var start = position[i];
 						var space = position[i+1];
@@ -56,7 +83,8 @@
 							imageData1.data[i] = dataArr[i];
 						}
 					}
-					var endMSecond = new Date().getTime();
+					var endMSecond = new Date().getTime(); */
+					
 					//console.log('开始时间毫秒数：'+startMSecond);
 					//console.log('结束时间毫秒数：'+endMSecond);
 					console.log('耗时：'+(endMSecond-startMSecond)/1000+'秒');//还原像素差耗时
