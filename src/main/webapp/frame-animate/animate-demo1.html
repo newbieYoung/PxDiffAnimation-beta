@@ -3,8 +3,16 @@
 <head>
 	<meta charset="UTF-8">
 	<title>根据位置信息文件和像素差png还原图片</title>
-	<script type="text/javascript" src="./js/test.js"></script>
+	
+	<script type="text/javascript" src="./js/three.js"></script>
+	<!-- <script type="text/javascript" src="./js/year.js"></script> -->
+	
 	<script type="text/javascript" src="./lib/doublylinkedlist.js"></script>
+	<style type="text/css">
+	body{
+		background-color:pink;
+	}
+	</style>
 </head>
 <body>
 	<script type="text/javascript">
@@ -15,7 +23,15 @@
 		var imageData1;
 		var canvas1;
 		var context1;
+
+		var width = 116;
+		var height = 118;
+		//var width = 640;
+		//var height = 236;
+		
 		img1.src = './images/three/3.png';
+		//img1.src = './images/year/20.png';
+		
 		img1.onload = function(){
 			canvas1 = document.createElement('canvas');//第一帧canvas
 			canvas1.width = 640;
@@ -27,15 +43,17 @@
 			body.appendChild(canvas1);
 			setTimeout(function(){
 				var img = new Image();
-				img.src = './images/test/test3.png';
+				
+				img.src = './images/test/three.png';
+				//img.src = './images/test/year.png'
+				
 				img.onload = function(){
 					var canvas = document.createElement('canvas');//像素差canvas
-					canvas.width = 116;
-					canvas.height = 118;
+					canvas.width = width;
+					canvas.height = height;
 					var context = canvas.getContext('2d');
-					context.drawImage(this,0,0,116,118);//导入图片
-					data = context.getImageData(0,0,116,118).data;//获取像素数据
-					
+					context.drawImage(this,0,0,width,height);//导入图片
+					data = context.getImageData(0,0,width,height).data;//获取像素数据
 					//使用自定义数据类型DoublyLinkedList处理像素差数据
 					var startMSecond = new Date().getTime();
 					var dataList = new DoublyLinkedList();
