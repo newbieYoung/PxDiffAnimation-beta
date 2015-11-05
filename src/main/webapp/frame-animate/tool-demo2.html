@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>使用JS原生Array类型计算逐帧动画的像素差，并把各帧之间的像素差整合成一张png以及位置信息文件</title>
+    <title>使用自定义双向链表类型计算逐帧动画的像素差，并把各帧之间的像素差整合成一张png以及位置信息文件</title>
+    <script type="text/javascript" src="./lib/doublylinkedlist.js"></script>
     <style type="text/css">
     body {
         margin: 0;
@@ -23,7 +24,7 @@
     var height = 1136;
     var srcs = ['./images/three/3.png',
                 './images/three/4.png'
-                /*'./images/three/5.png',
+                './images/three/5.png',
                 './images/three/6.png',
                 './images/three/7.png',
                 './images/three/8.png',
@@ -43,7 +44,7 @@
                 './images/three/30.png','./images/three/31.png',
                 './images/three/32.png','./images/three/33.png',
                 './images/three/34.png','./images/three/35.png',
-                './images/three/36.png','./images/three/37.png'*/
+                './images/three/36.png','./images/three/37.png'
     ]; //逐帧动画图片路径数组
     var imgs = [];
     var interval;
@@ -101,18 +102,19 @@
                 }
             }
             //整理像素差
-            var final = new Array(dataArr[0].length * (imgs.length - 1));
+            var final = new DoublyLinkedList();
             for (var i = 0; i < imgs.length - 1; i++) {
                 for (var j = 0; j < total[0].length; j++) {
-                    final[i * total[0].length + j] = total[i][j];
+                    final.push(total[i][j]);
                 }
             }
             console.log('总像素差数组长度为：' + final.length); //貌似chrome中js数组的最大长度为1亿左右
             var value = 0;
-            for (var i = 0; i < final.length; i++) {
-                if (final[i] != null) {
-                    value++;
-                }
+            var node = final.getHead();
+            while(node.next){
+            	if(node.value){
+            		value++
+            	}
             }
             console.log('总像素差数组中有效像素点数量为：' + value);
             var initLength = final.length;
@@ -131,7 +133,9 @@
                 } else {
                     if (space > 100) { //100表示误差值，只要超过100位无效位则可以截取
                         diff.push([start, space]);
-                        final.splice(start, space);
+                        for(var i=0;i<space;i++){
+                        	final.remove(start,true);
+                        }
                         space = 0;
                         no = start + 1; //截取后当前移动到start位，但是由于当前已经判断过了，所以从下一位开始
                     } else {
@@ -142,7 +146,9 @@
                 index++;
                 if (index === initLength) {
                     diff.push([start, space]);
-                    final.splice(start, space);
+                    for(var i=0;i<space;i++){
+                    	final.remove(start,true);
+                    }
                     space = 0;
                     no = start;
                 }
