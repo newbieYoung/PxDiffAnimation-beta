@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>使用JS原生Array类型提取空白计算像素差</title>
+    <title>不提取空白计算像素差</title>
+    <script type="text/javascript" src="./lib/doublylinkedlist.js"></script>
     <style type="text/css">
     body {
         margin: 0;
@@ -11,7 +12,7 @@
         background-color:pink;
     }
     canvas {
-        width:33%;
+    	width:33%;
     }
     </style>
 </head>
@@ -23,7 +24,7 @@
     var height = 1136;
     var srcs = ['./images/year/8.png',
                 './images/year/9.png'
-    ]; //逐帧动画图片路径数组
+    ]; //逐帧动画图片路径数组，一起计算运算量太大
     var imgs = [];
     var interval;
     var body = document.querySelector('body');
@@ -57,12 +58,12 @@
                 canvasArr.push(canvas);
                 var context = canvas.getContext('2d');
                 contextArr.push(context);
-                context.drawImage(imgs[i], 0, 0, canvas.width, canvas.height); //导入图片
+                context.drawImage(imgs[i], 0, 0, width, height); //导入图片
             }
             for (var i = 0; i < imgs.length; i++) {
                 var canvas = canvasArr[i];
                 var context = contextArr[i];
-                dataArr.push(context.getImageData(0, 0, canvas.width, canvas.height).data);
+                dataArr.push(context.getImageData(0, 0, width, height).data);
             }
             for (var i = 0; i < imgs.length - 1; i++) {
                 total[i] = new Array(dataArr[i].length);
@@ -74,7 +75,7 @@
                 var second = dataArr[i + 1];
                 console.log('第' + (i + 1) + '帧像素数组长度为：' + second.length);
                 for (var j = 0; j < first.length; j++) {
-                	if (Math.abs(first[j] - second[j])>10) {//忽略相似像素点
+                    if (Math.abs(first[j] - second[j])>10) {//忽略相似像素点
                         total[i][j] = second[j];
                     }
                 }
@@ -94,66 +95,23 @@
                 }
             }
             console.log('总像素差数组中有效像素点数量为：' + value);
-            var initLength = final.length;
-            var index = 0;
-            var no = 0;
-            var start = 0;
-            var space = 0;
-            var diff = [];
-            while (index < initLength) {
-                if (final[no] == null) {
-                    if (space === 0) {
-                        start = no;
-                    }
-                    space++;
-                    no++;
-                } else {
-                    if (space > 1000) { //100表示误差值，只要超过100位无效位则可以截取
-                        diff.push([start, space]);
-                        final.splice(start, space);
-                        space = 0;
-                        no = start + 1; //截取后当前移动到start位，但是由于当前已经判断过了，所以从下一位开始
-                    } else {
-                        space = 0;
-                        no++;
-                    }
-                }
-                index++;
-                if (index === initLength) {
-                    diff.push([start, space]);
-                    final.splice(start, space);
-                    space = 0;
-                    no = start;
-                }
-            }
             var endMSecond = new Date().getTime();
             console.log('耗时：' + (endMSecond - startMSecond) / 1000 + '秒'); //计算像素差耗时
-            console.log('去除无效数据段后的像素差数组长度为：' + final.length);
-            console.log('去除无效数据段时生产的位置信息数组长度为：' + diff.length);
-            //整理输出像素差png的宽度和高度，尽可能的让宽度和高度相近（宽度和高度在乘积相同的情况下对输出图形的大小无影响）
-            var num3 = final.length;
-            if (num3 / 4 !== Math.floor(num3 / 4)) {
-                num3 = (Math.floor(num3 / 4) + 1) * 4;
-            }
-            var num1 = Math.floor(Math.sqrt(num3 / 4));
-            var num2 = Math.floor(num3 / 4 / num1) + 1;
-            diff.push([final.length, num1 * num2 * 4 - final.length]);
-            final.length = num1 * num2 * 4;
-            //document.write(diff);
-            console.log(num1 + ' ' + num2);
             var result = document.createElement('canvas');
-            result.width = num1;
-            result.height = num2;
+            result.width = 640;
+            result.height = 1136;
             body.appendChild(result);
             var resultContext = result.getContext('2d');
-            var imageData = resultContext.getImageData(0, 0, num1, num2);
-            for (var i = 0; i < num3; i++) { //忽略补位数据
-                imageData.data[i] = final[i];
+            var imageData = resultContext.getImageData(0, 0, width, height);
+            for (var i = 0; i < final.length; i++) {
+            	if(final[i]){
+            		imageData.data[i] = final[i];
+            	}
             }
             //显示像素差png
-            resultContext.putImageData(imageData, 0, 0, 0, 0, num1, num2);
+            resultContext.putImageData(imageData, 0, 0, 0, 0, width, height);
         }
-    }, 1000);
+    }, 0);
     </script>
 </body>
 

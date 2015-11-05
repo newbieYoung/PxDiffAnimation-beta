@@ -3,15 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>使用自定义双向链表类型计算逐帧动画的像素差，并把各帧之间的像素差整合成一张png以及位置信息文件</title>
+    <title>使用自定义双向链表类型提取空白计算像素差</title>
     <script type="text/javascript" src="./lib/doublylinkedlist.js"></script>
     <style type="text/css">
     body {
         margin: 0;
         padding: 0;
+        background-color:pink;
     }
     canvas {
-        height: 100px;
+        width: 33%;
     }
     </style>
 </head>
@@ -21,38 +22,10 @@
     var startMSecond = new Date().getTime();
     var width = 640; //逐帧动画图片实际宽度和高度
     var height = 1136;
-    var srcs = [/*'./images/year/1.png',
-                './images/year/2.png',
-                './images/year/3.png',
-                './images/year/4.png',
-                './images/year/5.png',
-                './images/year/6.png',
-                './images/year/7.png',
-                './images/year/8.png',
-                './images/year/9.png',
-                './images/year/10.png',
-                './images/year/11.png',
-                './images/year/12.png',
-                './images/year/13.png',
-                './images/year/14.png',
-                './images/year/15.png',
-                './images/year/16.png',
-                './images/year/17.png',
-                './images/year/18.png',
-                './images/year/19.png',*/
-                './images/year/20.png',
-                './images/year/21.png'
-                /*'./images/year/22.png',
-                './images/year/23.png',
-                './images/year/24.png',
-                './images/year/25.png',
-                './images/year/26.png',
-                './images/year/27.png',
-                './images/year/28.png',
-                './images/year/29.png',
-                './images/year/30.png',
-                './images/year/31.png',
-                './images/year/32.png'*/
+    var srcs = [/* './images/year/8.png',
+                './images/year/9.png' */
+                './images/three/10.png',
+                './images/three/11.png'
     ]; //逐帧动画图片路径数组
     var imgs = [];
     var interval;
@@ -104,7 +77,7 @@
                 var second = dataArr[i + 1];
                 console.log('第' + (i + 1) + '帧像素数组长度为：' + second.length);
                 for (var j = 0; j < first.length; j++) {
-                    if (first[j] != second[j]) {
+                	if (Math.abs(first[j] - second[j])>10) {//忽略相似像素点
                         total[i][j] = second[j];
                     }
                 }
@@ -184,7 +157,7 @@
             result.height = num2;
             body.appendChild(result);
             var resultContext = result.getContext('2d');
-            var imageData = context.getImageData(0, 0, num1, num2);
+            var imageData = resultContext.getImageData(0, 0, num1, num2);
             for (var i = 0; i < num3; i++) { //忽略补位数据
                 imageData.data[i] = final.get(i,true).value;
             }
