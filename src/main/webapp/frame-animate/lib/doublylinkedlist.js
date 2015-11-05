@@ -126,4 +126,54 @@ DoublyLinkedList.prototype.insert = function(index,value,memory){
     }
     return node;
 };
+/**
+ * 删除某个位置的节点
+ * @param  {[type]} index  [位置]
+ * @param  {[type]} memory [是否采用记忆查找]
+ */
+DoublyLinkedList.prototype.del = function(index,memory){
+	var node;
+	if(index<0||index>=this.length){
+		node = null;
+	}else{
+		node = this.get(index,memory);
+		if(node){
+			var pre = node.previous;
+			var next = node.next;
+			if(!pre&&!next){//前指针和后指针都不存在，即清空链表
+				this.head = null;
+				this.end = null;
+				this.memory.pointer = null;
+				this.memory.no = null;
+			}else if(pre&&!next){//存在前指针不存在后指针，即删除尾部节点
+				node.previous = null;
+				pre.next = null;
+				this.end = pre;
+				if(memory){
+					this.memory.pointer = this.end;
+					this.memory.no = index-1;
+				}
+			}else if(!pre&&next){//不存在前指针存在后指针，即删除头部节点
+				node.next = null;
+				next.previous = null;
+				this.head = next;
+				if(memory){
+					this.memory.pointer = this.head;
+					this.memory.no = index;
+				}
+			}else{
+				node.previous = null;
+				node.next = null;
+				pre.next = next;
+				next.previous = pre;
+				if(memory){
+					this.memory.pointer = next;
+					this.memory.no = index;
+				}
+			}
+			this.length--;
+		}
+	}
+	return node;
+};
 
