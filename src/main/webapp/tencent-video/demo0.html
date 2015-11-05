@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>使用腾讯视频插件在网页中嵌入视频</title>
+	<script type="text/javascript" src="./tvp.player_v2.js"></script>
+</head>
+<body>
+	<div id="mod_player"></div>
+	<script type="text/javascript">
+	var video = new tvp.VideoInfo();
+	var player = new tvp.Player();
+	video.setVid('t0170hb7su4');
+	player.create({
+		width:'400',
+		height:'400',
+		modId:'mod_player',
+		type:'2',
+		video:video,
+		//播放完成
+		onallended:function(){
+			player.play();
+			//还有其他方法
+			console.log(player);
+		},
+		//初始化完成
+		oninited:function(){
+			player.play();
+		}
+	})
+	</script>
+</body>
+</html>
