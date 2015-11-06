@@ -4,8 +4,9 @@
 	<meta charset="UTF-8">
 	<title>根据位置信息文件和像素差png还原图片</title>
 	
-	<script type="text/javascript" src="./js/three.js"></script>
+	<!-- <script type="text/javascript" src="./js/three.js"></script> -->
 	<!-- <script type="text/javascript" src="./js/year.js"></script> -->
+	<script type="text/javascript" src="./js/final-test.js"></script>
 	
 	<script type="text/javascript" src="./lib/doublylinkedlist.js"></script>
 	<style type="text/css">
@@ -24,12 +25,20 @@
 		var canvas1;
 		var context1;
 
+		//test final
 		var width = 640;
-		var height = 121;
+		var height = 194;
+
+		//test three
+		//var width = 640;
+		//var height = 121;
+		
+		//test year
 		//var width = 640;
 		//var height = 82;
 		
-		img1.src = './images/three/10.png';
+		img1.src = './images/origin/17.png';
+		//img1.src = './images/three/10.png';
 		//img1.src = './images/year/8.png';
 		
 		img1.onload = function(){
@@ -44,7 +53,8 @@
 			setTimeout(function(){
 				var img = new Image();
 				
-				img.src = './images/test/three.png';
+				img.src = './images/final/17-18.png';
+				//img.src = './images/test/three.png';
 				//img.src = './images/test/year.png'
 				
 				img.onload = function(){

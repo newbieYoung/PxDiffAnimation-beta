@@ -24,8 +24,10 @@
     var height = 1136;
     var srcs = [/* './images/year/8.png',
                 './images/year/9.png' */
-                './images/three/10.png',
-                './images/three/11.png'
+                /*'./images/three/10.png',
+                './images/three/11.png'*/
+                './images/origin/17.png',
+                './images/origin/18.png'
     ]; //逐帧动画图片路径数组
     var imgs = [];
     var interval;
@@ -77,7 +79,7 @@
                 var second = dataArr[i + 1];
                 console.log('第' + (i + 1) + '帧像素数组长度为：' + second.length);
                 for (var j = 0; j < first.length; j++) {
-                	if (Math.abs(first[j] - second[j])>10) {//忽略相似像素点
+                	if (Math.abs(first[j] - second[j])>3) {//忽略相似像素点，至于为什么是10，是我通过不断调试得到得一个最适合示例动画得常量值
                         total[i][j] = second[j];
                     }
                 }
@@ -113,7 +115,7 @@
                     space++;
                     no++;
                 } else {
-                    if (space > 1000) { //100表示误差值，只要超过100位无效位则可以截取
+                    if (space > 720) { //720表示误差值，只要超过720位无效位则可以截取，至于为什么取720，是我通过不断调试得到了一个最适合示例动画的常量
                         diff.push([start, space]);
                     	for(var i=0;i<space;i++){
                         	final.del(start,true);
@@ -150,7 +152,7 @@
             for(var i=final.size();i<num1*num2*4;i++){
                 final.push(null);
             }
-            document.write(diff);
+            //document.write(diff);
             console.log(num1 + ' ' + num2);
             var result = document.createElement('canvas');
             result.width = num1;
