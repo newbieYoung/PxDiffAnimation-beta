@@ -189,18 +189,20 @@ onmessage = function(e) {
 	for(var i=position.length-4;i>=0;i=i-2){
 		var start = position[i];
 		var space = position[i+1];
-		for(var j=0;j<space;j++){
-			dataList.insert(start,null,true);
-		}
+		dataList.insert(start,new Array(space),true);
 	}
 	var node = dataList.getHead();
 	var no = 0;
 	while(node.next){
-		if(node.value){
+		if(node.value&&!(node.value instanceof Array)){
 			imageData.data[no] = node.value;
 		}
+		if(node.value instanceof Array){
+			no+=node.value.length;
+		}else{
+			no++;
+		}
 		node = node.next;
-		no++;
 	}
 	postMessage(imageData);
 };
