@@ -130,7 +130,7 @@
             console.log('耗时：' + (endMSecond - startMSecond) / 1000 + '秒'); //计算像素差耗时
             console.log('去除无效数据段后的像素差数组长度为：' + final.length);
             console.log('去除无效数据段时生产的位置信息数组长度为：' + diff.length);
-            //整理输出像素差png的宽度和高度，尽可能的让宽度和高度相近（宽度和高度在乘积相同的情况下对输出图形的大小无影响）
+            //整理输出像素差png的宽度和高度（统一宽度或者高度方便合成精灵图）
             var num3 = final.length;
             if (num3 / 4 !== Math.floor(num3 / 4)) {
                 num3 = (Math.floor(num3 / 4) + 1) * 4;
