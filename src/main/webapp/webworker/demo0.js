@@ -9,8 +9,11 @@ function timedCount() {
 }
 //监听主线程
 onmessage = function(e) {
-    if (e.data === 'start') {
-    	console.log('let\'s go');
-        timedCount();
-    }
+	if(e.data.name === 'tsm'){
+		console.log('mom let\'s wait');
+	}else{
+		e.data.name = 'tsm';
+		console.log(e.data.name+' let\'s go');
+		timedCount();
+	}
 };
