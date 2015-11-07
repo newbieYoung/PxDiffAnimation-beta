@@ -22,10 +22,16 @@
 	var img = new Image();
 	img.src = './images/final/final.png';
 	img.onload = function(){
-		context.drawImage(this,0,1136,width,height,0,0,width,height);
-		body.appendChild(canvas);//显示第二帧
-		var imageData = context.getImageData(0, 0, width, height);
-		animate(14,this,imageData,2272);
+		context.drawImage(img,0,0,width,height,0,0,width,height);
+		body.appendChild(canvas);//显示第一帧
+		setTimeout(function(){
+			context.clearRect(0, 0, width, height);
+			context.drawImage(img,0,1136,width,height,0,0,width,height);
+			var imageData = context.getImageData(0, 0, width, height);
+			setTimeout(function(){
+				animate(14,img,imageData,2272);
+			});
+		},200);
 	};
 	function animate(no,img,imageData,lheight){
 		var temp = document.createElement('canvas');
