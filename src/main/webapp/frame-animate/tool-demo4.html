@@ -35,7 +35,7 @@
 		}
 		console.log(index);
 		for(var i=index.length-1;i>=0;i--){
-			array.push(position.slice(index[i],position.length));
+			array.push(position.splice(index[i],(position.length-index[i])));
 		}
 		array.push(position);
 		for(var i=0;i<array.length;i++){
