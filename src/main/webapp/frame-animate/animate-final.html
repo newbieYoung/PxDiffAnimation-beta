@@ -25,24 +25,31 @@
 		context.drawImage(this,0,1136,width,height,0,0,width,height);
 		body.appendChild(canvas);//显示第二帧
 		var imageData = context.getImageData(0, 0, width, height);
+		animate(14,this,imageData,2272);
+	};
+	function animate(no,img,imageData,lheight){
 		var temp = document.createElement('canvas');
 		temp.width = width;
 		var tempContext = temp.getContext('2d');
-		// 13-14
-		var worker1314 = new Worker('./js/compute.js');
-		var data1314 = {};
-		temp.height = diffHeight['14'];
-		tempContext.drawImage(this,0,2272,640,diffHeight['14'],0,0,640,diffHeight['14']);
-		data1314.data = tempContext.getImageData(0, 0, temp.width, temp.height).data;
-		data1314.imageData = imageData;
-		data1314.position = position['14'];
-		worker1314.postMessage(data1314);
-		worker1314.onmessage = function(e){
+		var worker = new Worker('./js/compute.js');
+		var workerData = {};
+		temp.height = diffHeight[no];
+		tempContext.drawImage(img,0,lheight,width,diffHeight[no],0,0,width,diffHeight[no]);
+		workerData.data = tempContext.getImageData(0, 0, temp.width, temp.height).data;
+		workerData.imageData = imageData;
+		workerData.position = position[no];
+		worker.postMessage(workerData);
+		worker.onmessage = function(e){
 			context.clearRect(0, 0, width, height);
 			context.putImageData(e.data, 0, 0, 0, 0, width, height);
-			worker1314.terminate();
+			this.terminate();
+			if(no<18){
+				lheight += diffHeight[no];
+				no++;
+				animate(no,img,e.data,lheight);
+			}
 		};
-	};
+	}
 	</script>
 </body>
 </html>
