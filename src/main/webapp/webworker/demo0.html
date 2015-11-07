@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>WebWorker初步了解</title>
+</head>
+
+<body>
+    <script type="text/javascript">
+    var worker = new Worker('demo0.js');
+    //通知webworker
+    worker.postMessage('start');
+    //监听webworker
+    worker.onmessage = function(event) {
+    	document.write(event.data);
+    };
+    </script>
+</body>
+
+</html>
