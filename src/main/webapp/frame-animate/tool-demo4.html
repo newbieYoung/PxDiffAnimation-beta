@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>把无效位置信息数组分隔，方便webworker处理</title>
+	<script type="text/javascript" src="./js/final-test.js"></script>
+</head>
+<body>
+	<script type="text/javascript">
+		var num = 4;
+		var index = new Array();
+		var array = new Array();
+		var sum = 0;
+		console.log(position.length);
+		for(var i=1;i<position.length;i=i+2){
+			sum += position[i];
+		}
+		console.log(sum);
+		var constant = Math.floor(sum/num);
+		console.log(constant);
+		var temp = 0;
+		for(var i=1;i<position.length;i=i+2){
+			temp += position[i];
+			if(temp>constant){
+				if((temp-constant)<(constant+position[i]-temp)){
+					console.log(temp);
+					index.push(i+1);
+					
+				}else{
+					console.log(temp-position[i]);
+					index.push(i-1);
+				}
+				temp = 0;
+			}
+		}
+		console.log(index);
+		for(var i=index.length-1;i>=0;i--){
+			array.push(position.slice(index[i],position.length));
+		}
+		array.push(position);
+		for(var i=0;i<array.length;i++){
+			console.log(array[i][0]);
+			for(var j=2;j<=array[i].length-2;j=j+2){
+				array[i][j] = array[i][j]-array[i][0];
+			}
+			array[i][0] = 0;
+		}
+		console.log(array);
+		document.write(array[0]);
+	</script>
+</body>
+</html>
