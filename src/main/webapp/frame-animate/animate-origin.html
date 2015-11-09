@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>普通逐帧动画例子</title>
+</head>
+<body>
+	<script type="text/javascript">
+		//常量
+		var body = document.querySelector('body');
+		var width = 640;
+		var height = 1136;
+		//动画canvas
+		var canvas = document.createElement('canvas');
+		canvas.width = width;
+		canvas.height = height;
+		var context = canvas.getContext('2d');
+		//图片
+		var img = new Image();
+		img.src = './images/origin/origin.png';
+		img.onload = function(){
+			body.appendChild(canvas);//显示第一帧
+			for(var i=0;i<7;i++){
+				(function(index){
+					setTimeout(function(){
+						context.clearRect(0, 0, width, height);
+						context.drawImage(img,640*index,0,width,height,0,0,width,height);
+					},index*200);
+				})(i)
+			}
+		};
+	</script>
+</body>
+</html>
