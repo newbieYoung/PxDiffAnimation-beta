@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>像素差逐帧动画例子（还原出所有帧后才开始动画）</title>
+	<script type="text/javascript" src="./js/final.js"></script>
+</head>
+<body>
+	<script type="text/javascript">
+	//常量
+	var body = document.querySelector('body');
+	var width = 640;
+	var height = 1136;
+	var totalImageData = [];//总像素数据
+	var interval;
+	//动画canvas
+	var canvas = document.createElement('canvas');
+	canvas.width = width;
+	canvas.height = height;
+	var context = canvas.getContext('2d');
+	//图片
+	var img = new Image();
+	img.src = './images/final/final.png';
+	img.onload = function(){
+		context.drawImage(img,0,1136,width,height,0,0,width,height);
+		var initImageData = context.getImageData(0, 0, width, height);
+		getFrame(14,initImageData,img,2272,position,5);
+	};
+	/**
+	 * 还原帧像素数据
+	 * @param  {[type]} startNo       [还原帧中第一帧序号]
+	 * @param  {[type]} initImageData [启始帧像素数据]
+	 * @param  {[type]} img           [原图]
+	 * @param  {[type]} lheight       [原图启始纵坐标（合并精灵图是纵向排列的）]
+	 * @param  {[type]} position      [还原帧位置差数据]
+	 * @param  {[type]} length        [还原帧数量]
+	 */
+	function getFrame(startNo,initImageData,img,lheight,position,length){
+		var imageData = [];//用于存储还原之后的像素差
+		var data = [];
+	 	for(var i=0;i<length;i++){
+	 		var init = document.createElement('canvas');
+	 		init.width = width;
+	 		init.height = height;
+	 		var initContext = init.getContext('2d');
+	 		imageData.push(initContext.getImageData(0, 0, width, height));
+	 		var no = startNo+i;
+	   		var temp = document.createElement('canvas');
+			temp.width = width;
+			temp.height = diffHeight[no];
+			var tempContext = temp.getContext('2d');
+			if(diffHeight[no-1]){
+				lheight += diffHeight[no-1];
+			}
+			tempContext.drawImage(img,0,lheight,width,diffHeight[no],0,0,width,diffHeight[no]);
+			data.push(tempContext.getImageData(0, 0, temp.width, temp.height).data);
+	   	}
+	   	var worker = new Worker('./js/compute1.js');
+		var workerData = {
+			imageData:imageData,
+			startNo:startNo,
+			data:data,
+			position:position,
+			length:length,
+			initImageData:initImageData
+		};
+		worker.postMessage(workerData);
+		worker.onmessage = function(e){
+			var startNo = e.data.startNo;
+			var imageData = e.data.imageData;
+			for(var i=0;i<imageData.length;i++){
+				totalImageData[startNo+i] = imageData[i];
+			}
+			var num = 0;
+			for(var i=0;i<totalImageData.length;i++){
+				if(totalImageData[i]){
+					num++;
+				}
+			}
+			if(num===5){
+				animate(startNo);
+			}
+			this.terminate();
+		};
+	}
+	function animate(startNo){
+		context.clearRect(0, 0, width, height);
+		var imageData = context.drawImage(img,0,0,width,height,0,0,width,height);
+		body.appendChild(canvas);
+		setTimeout(function(){
+			context.clearRect(0, 0, width, height);
+			context.drawImage(img,0,1136,width,height,0,0,width,height);
+		},200);
+		for(var i=startNo;i<totalImageData.length;i++){
+			(function(index){
+				setTimeout(function(){
+					context.clearRect(0, 0, width, height);
+					context.putImageData(totalImageData[index], 0, 0, 0, 0, width, height);
+				},(index-12)*200);
+			})(i);
+		}
+	}
+	</script>
+</body>
+</html>
