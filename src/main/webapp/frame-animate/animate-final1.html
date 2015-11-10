@@ -90,13 +90,13 @@
 		setTimeout(function(){
 			context.clearRect(0, 0, width, height);
 			context.drawImage(img,0,1136,width,height,0,0,width,height);
-		},200);
+		},150);
 		for(var i=startNo;i<totalImageData.length;i++){
 			(function(index){
 				setTimeout(function(){
 					context.clearRect(0, 0, width, height);
 					context.putImageData(totalImageData[index], 0, 0, 0, 0, width, height);
-				},(index-12)*200);
+				},(index-12)*150);
 			})(i);
 		}
 	}
