@@ -9,7 +9,11 @@
 			margin:0;
 			padding: 0;
         }
-	</style>
+        #next,#reset{
+        	display:inline-block;
+        	width:49%;
+        }
+    </style>
 </head>
 <body>
 	<div id="params">
@@ -22,9 +26,11 @@
 		<input type="button" name="compute" value="计算像素差并查看还原效果">
 	</div>
 	<div id="last"></div>
-	<div id="next"></div>
+	<div>
+		<div id="next"></div>
+		<div id="reset"></div>
+	</div>
 	<div id="diff"></div>
-	<div id="reset"></div>
 	<script type="text/javascript">
 		'use strict';
 		//请输入逐帧动画中图片的宽度和高度（约定逐帧动画中每一帧图片的宽度和高度一样）
@@ -32,11 +38,11 @@
 		let height = 1136;
 		//请输入上一帧的相关信息
 		let last = {
-			src:'./images/origin/12.png',
+			src:'./images/origin/13.png',
 		};
 		//请输入下一帧的相关信息
 		let next = {
-			src:'./images/origin/13.png',
+			src:'./images/origin/14.png',
 		};
 		//加载图片
 		let lastImg = new Image();
@@ -114,7 +120,7 @@
 					if (Math.abs(lastData[i] - nextData[i])>pxDiff) {
 						pxArray[i] = nextData[i];
                     }
-					if(Math.abs(lastData[i] - nextData[i])===0&&nextData[i]!==0){
+					if(Math.abs(lastData[i] - nextData[i])<=pxDiff&&nextData[i]!==0){
 						sameNum++;
 					}
 				}
