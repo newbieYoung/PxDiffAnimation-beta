@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>计算像素差工具v0.0.1（只计算前一帧和后一帧的像素差并还原）</title>
+	<script type="text/javascript" src="./lib/doublylinkedlist.js"></script>
+	<style type="text/css">
+		body{
+			margin:0;
+			padding: 0;
+        }
+	</style>
+</head>
+<body>
+	<div id="params">
+		颜色误差值:<input type="text" name="pxDiff" value="0"><br/>
+		截取最小长度:<input type="text" name="minLen" value="720"><br/>
+		位置信息:<textarea name="position"></textarea><br/>
+		位置信息数组长度:<input type="text" name="positionLen"><br/>
+		像素差图片高度:<input type="text" name="height"><br/>
+		前后帧相同颜色值:<input type="text" name="sameNum"><br/>
+		<input type="button" name="compute" value="计算像素差并查看还原效果">
+	</div>
+	<div id="last"></div>
+	<div id="next"></div>
+	<div id="diff"></div>
+	<div id="reset"></div>
+	<script type="text/javascript">
+		'use strict';
+		//请输入逐帧动画中图片的宽度和高度（约定逐帧动画中每一帧图片的宽度和高度一样）
+		let width = 640;
+		let height = 1136;
+		//请输入上一帧的相关信息
+		let last = {
+			src:'./images/origin/12.png',
+		};
+		//请输入下一帧的相关信息
+		let next = {
+			src:'./images/origin/13.png',
+		};
+		//加载图片
+		let lastImg = new Image();
+		lastImg.src = last.src;
+		lastImg.onload = function(){
+			last.img = this;
+		};
+		lastImg.onerror = function(){
+			console.log('前一帧图片路径为:('+last.src+')加载失败！');
+		};
+		let nextImg = new Image();
+		nextImg.src = next.src;
+		nextImg.onload = function(){
+			next.img = this;
+		};
+		nextImg.onerror = function(){
+			console.log('后一帧图片路径为:('+next.src+')加载失败！');
+		}
+		//页面元素
+		let paramsDiv = document.querySelector('#params');
+		let pxDiffInput = document.querySelector('#params input[name=pxDiff]');
+		let minLenInput = document.querySelector('#params input[name=minLen]');
+		let computeButton = document.querySelector('#params input[name=compute]');
+		let positionTextArea = document.querySelector('#params textarea[name=position]');
+		let positionLenInput = document.querySelector('#params input[name=positionLen]');
+		let heightInput = document.querySelector('#params input[name=height]');
+		let sameNumInput = document.querySelector('#params input[name=sameNum]');
+		let lastDiv = document.querySelector('#last');
+		let nextDiv = document.querySelector('#next');
+		let diffDiv = document.querySelector('#diff');
+		let resetDiv = document.querySelector('#reset');
+		//不断轮询前后帧图片是否加载完毕
+		let num = 0;
+		let interval = setInterval(function(){
+			if((last.img&&next.img)||num>=5){
+				if(interval){
+					clearInterval(interval);
+				}
+				if(num>=5&&(!last.img||!next.img)){
+					console.log('达到轮询最大次数但是图片依然没有完全加载完成！');
+				}else{
+					last.canvas = document.createElement('canvas');
+					last.canvas.width = width;
+					last.canvas.height = height;
+					last.context = last.canvas.getContext('2d');
+					last.context.drawImage(last.img, 0, 0, width, height);
+					last.imageData = last.context.getImageData(0, 0, width, height);
+					lastDiv.appendChild(last.canvas);
+					next.canvas = document.createElement('canvas');
+					next.canvas.width = width;
+					next.canvas.height = height;
+					next.context = next.canvas.getContext('2d');
+					next.context.drawImage(next.img,0,0,width,height);
+					next.imageData = next.context.getImageData(0,0,width,height);
+					nextDiv.appendChild(next.canvas);
+					getDiffAndReset();
+					computeButton.addEventListener('click',function(){
+						getDiffAndReset();
+					});
+				}
+			}
+			num++;
+		},1000);
+		//计算像素差并查看还原效果
+		function getDiffAndReset(){
+			let pxDiff = parseFloat(pxDiffInput.value);
+			let minLen = parseFloat(minLenInput.value);
+			let sameNum = 0;
+			if(pxDiff>=0&&minLen){
+				//计算像素差
+				let pxArray = new Array(last.imageData.data.length);
+				let lastData = last.imageData.data;
+				let nextData = next.imageData.data;
+				for(let i=0;i<pxArray.length;i++){
+					if (Math.abs(lastData[i] - nextData[i])>pxDiff) {
+						pxArray[i] = nextData[i];
+                    }
+					if(Math.abs(lastData[i] - nextData[i])===0&&nextData[i]!==0){
+						sameNum++;
+					}
+				}
+				sameNumInput.value = sameNum;
+				//计算位置信息
+				let final = new DoublyLinkedList();
+	            for (let i = 0; i < pxArray.length; i++) {
+	                final.push(pxArray[i]);
+	            }
+	            let initLength = final.size();
+	            let index = 0;
+	            let no = 0;
+	            let start = 0;
+	            let space = 0;
+	            let diff = [];
+	            while (index < initLength) {
+	                if (final.get(no,true).value == null) {
+	                    if (space === 0) {
+	                        start = no;
+	                    }
+	                    space++;
+	                    no++;
+	                } else {
+	                    if (space >= minLen) {
+	                        diff.push([start, space]);
+	                    	for(let i=0;i<space;i++){
+	                        	final.del(start,true);
+	                        }
+	                        space = 0;
+	                        no = start + 1; //截取后当前移动到start位，但是由于当前已经判断过了，所以从下一位开始
+	                    } else {
+	                        space = 0;
+	                        no++;
+	                    }
+	                }
+	                index++;
+	                if (index === initLength) {
+	                    diff.push([start, space]);
+	                    for(let i=0;i<space;i++){
+	                    	final.del(start,true);
+	                    }
+	                    space = 0;
+	                    no = start;
+	                }
+	            }
+	            //输出数据
+	            let num3 = final.size();
+	            if (num3 / 4 !== Math.floor(num3 / 4)) {
+	                num3 = (Math.floor(num3 / 4) + 1) * 4;
+	            }
+	            let num1 = width;//像素差png宽度为原图宽度
+	            let num2 = Math.floor(num3 / 4 / num1) + 1;
+	            diff.push([final.size(), num1 * num2 * 4 - final.size()]);
+	            for(let i=final.size();i<num1*num2*4;i++){
+	                final.push(null);
+	            }
+	            positionTextArea.innerHTML = diff;
+	            positionLenInput.value = diff.length;
+	            let diffCanvas = document.querySelector('#diff canvas');
+	            if(!diffCanvas){
+	            	diffCanvas = document.createElement('canvas');
+	            }
+	            diffCanvas.width = num1;
+	            diffCanvas.height = num2;
+	            heightInput.value = num2;
+	            diffDiv.appendChild(diffCanvas);
+	            let diffContext = diffCanvas.getContext('2d');
+	            let diffImageData = diffContext.getImageData(0, 0, num1, num2);
+	            for (let i = 0; i < num3; i++) { //忽略补位数据
+	                diffImageData.data[i] = final.get(i,true).value;
+	            }
+	            diffContext.putImageData(diffImageData, 0, 0, 0, 0, num1, num2);
+	            //还原
+	           	let dataList = new DoublyLinkedList();
+				for(let i=0;i<diffImageData.data.length;i++){
+					dataList.push(diffImageData.data[i]);
+				}
+				for(let i=diff.length-2;i>=0;i--){
+					let start = diff[i][0];
+					let space = diff[i][1];
+					dataList.insert(start,new Array(space),true);
+				}
+				let tempCanvas = document.createElement('canvas');//复制前一帧像素数据
+				tempCanvas.width = width;
+				tempCanvas.height = height;
+				let tempContext = tempCanvas.getContext('2d');
+				let tempImageData = tempContext.getImageData(0,0,width,height);
+				for(let i=0;i<lastData.length;i++){
+					tempImageData.data[i] = lastData[i];
+				}
+				let node = dataList.getHead();
+				no = 0;
+				while(node.next){
+					if(node.value&&!(node.value instanceof Array)){
+						tempImageData.data[no] = node.value;
+					}
+					if(node.value instanceof Array){
+						no+= node.value.length;
+					}else{
+						no++;
+					}
+					node = node.next;
+				}
+				let resetCanvas = document.querySelector('#reset canvas');
+				if(!resetCanvas){
+					resetCanvas = document.createElement('canvas');
+					resetCanvas.width = width;
+					resetCanvas.height = height;
+				}
+				let resetContext = resetCanvas.getContext('2d');
+				resetContext.clearRect(0, 0, width, height);
+				resetContext.putImageData(tempImageData, 0, 0, 0, 0, width, height);
+				resetDiv.appendChild(resetCanvas);
+			}else{
+				console.log('请输入误差值以及最小取值长度');
+			}
+		}
+	</script>
+</body>
+</html>
