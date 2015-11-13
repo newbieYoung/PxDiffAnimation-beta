@@ -13,16 +13,24 @@
         	display:inline-block;
         	width:49%;
         }
+        textarea,input[readonly]{
+        	background-color:gray;
+        	border:0;
+        }
+        input[type=button]{
+        	margin:10px;
+        }
     </style>
 </head>
 <body>
 	<div id="params">
 		颜色误差值:<input type="text" name="pxDiff" value="0"><br/>
 		截取最小长度:<input type="text" name="minLen" value="720"><br/>
-		位置信息:<textarea name="position"></textarea><br/>
-		位置信息数组长度:<input type="text" name="positionLen"><br/>
-		像素差图片高度:<input type="text" name="height"><br/>
-		前后帧相同颜色值:<input type="text" name="sameNum"><br/>
+		位置信息:<textarea name="position" readonly="true"></textarea><br/>
+		位置信息数组长度:<input type="text" name="positionLen" readonly="true"><br/>
+		像素差图片高度:<input type="text" name="height" readonly="true"><br/>
+		前后帧相同颜色值数量:<input type="text" name="sameNum" readonly="true"><br/>
+		存在数据丢失颜色值数量:<input type="text" name="diffNum" readonly="true">(浏览器对getImageData和putImageData的实现有bug会存在数据丢失)<br/>
 		<input type="button" name="compute" value="计算像素差并查看还原效果">
 	</div>
 	<div id="last"></div>
@@ -70,6 +78,7 @@
 		let positionLenInput = document.querySelector('#params input[name=positionLen]');
 		let heightInput = document.querySelector('#params input[name=height]');
 		let sameNumInput = document.querySelector('#params input[name=sameNum]');
+		let diffNumInput = document.querySelector('#params input[name=diffNum]');
 		let lastDiv = document.querySelector('#last');
 		let nextDiv = document.querySelector('#next');
 		let diffDiv = document.querySelector('#diff');
@@ -193,6 +202,16 @@
 	                diffImageData.data[i] = final.get(i,true).value;
 	            }
 	            diffContext.putImageData(diffImageData, 0, 0, 0, 0, num1, num2);
+	            //canvas的putImageData和getImageData方法之间会丢失数据
+	            let diffNum = 0;
+	            let diffImageDataNext = diffContext.getImageData(0, 0, num1, num2);
+	            for(let i=0;i<diffImageDataNext.data.length;i++){
+	            	if(diffImageData.data[i]!==diffImageDataNext.data[i]){
+	            		diffNum++;
+	            	}
+	            }
+	            diffNumInput.value = diffNum;
+
 	            //还原
 	           	let dataList = new DoublyLinkedList();
 				for(let i=0;i<diffImageData.data.length;i++){
