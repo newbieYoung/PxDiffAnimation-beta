@@ -47,11 +47,11 @@
 		let height = 1136;
 		//请输入上一帧的相关信息
 		let last = {
-			src:'./images/three/5.png',
+			src:'./images/three/14.png',
 		};
 		//请输入下一帧的相关信息
 		let next = {
-			src:'./images/three/6.png',
+			src:'./images/three/15.png',
 		};
 		//加载图片
 		let lastImg = new Image();
@@ -128,20 +128,19 @@
 				let lastData = last.imageData.data;
 				let nextData = next.imageData.data;
 				for(let i=0;i<pxArray.length;i++){
-					if (Math.abs(lastData[i] - nextData[i])>pxDiff) {
-						/**
-						 * 前一帧有值但是后一帧变为0，如果还是记录后一帧的0，由于存在未剔除的无效
-						 * 位，Canvas会默认赋值为0，那么有效位的0就会和无效位的0混淆，导致还原时
-						 * 无法区分，发生还原异常的情况；为了解决这个问题，这里记录前一帧的值，后
-						 * 边还原时只要遇到像素差数组中的值和前一帧的值相等，那么就说明这里应该是
-						 * 0
-						 */
-						if(nextData[i]===0){
-							pxArray[i] = lastData[i];
-						}else{
-							pxArray[i] = nextData[i];
-						}
-                    }
+					/**
+					 * 前一帧有值但是后一帧变为0，如果还是记录后一帧的0，由于存在未剔除的无效
+					 * 位，Canvas会默认赋值为0，那么有效位的0就会和无效位的0混淆，导致还原时
+					 * 无法区分，发生还原异常的情况；为了解决这个问题，这里记录前一帧的值，后
+					 * 边还原时只要遇到像素差数组中的值和前一帧的值相等，那么就说明这里应该是
+					 * 0
+					 * 另外之所以后一帧为0时忽略颜色值误差是因为颜色变浅肉眼很难看出来，但是颜色消失确能用肉眼看出来
+					 */
+					if(nextData[i]===0&&lastData[i]!==nextData[i]){
+						pxArray[i] = lastData[i];
+					}else if(Math.abs(lastData[i] - nextData[i])>pxDiff){
+						pxArray[i] = nextData[i];
+					}
 					if(Math.abs(lastData[i] - nextData[i])<=pxDiff&&nextData[i]!==0){
 						sameNum++;
 					}
