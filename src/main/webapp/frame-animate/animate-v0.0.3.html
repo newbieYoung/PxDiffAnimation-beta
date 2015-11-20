@@ -20,7 +20,7 @@
 		var context = canvas.getContext('2d');
 		//图片
 		var img = new Image();
-		img.src = './images/final-v0.0.2/final.png';
+		img.src = './images/final-v0.0.3/final.png';
 		img.onload = function(){
 			context.drawImage(img,0,1136,width,height,0,0,width,height);
 			var initImageData = context.getImageData(0, 0, width, height);
@@ -56,7 +56,7 @@
 				tempContext.drawImage(img,0,lheight,width,diffHeight[no],0,0,width,diffHeight[no]);
 				data.push(tempContext.getImageData(0, 0, temp.width, temp.height).data);
 		   	}
-		   	var worker = new Worker('./js/compute-v0.0.2.js');
+		   	var worker = new Worker('./js/compute-v0.0.3.js');
 			var workerData = {
 				imageData:imageData,
 				startNo:startNo,
