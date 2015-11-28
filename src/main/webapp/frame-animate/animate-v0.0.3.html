@@ -22,9 +22,9 @@
 		var img = new Image();
 		img.src = './images/final-v0.0.3/final.png';
 		img.onload = function(){
-			context.drawImage(img,0,1136,width,height,0,0,width,height);
+			context.drawImage(img,0,2272,width,height,0,0,width,height);
 			var initImageData = context.getImageData(0, 0, width, height);
-			getFrame(3,initImageData,img,2272,position,fillLength,5);
+			getFrame(7,initImageData,img,3408,position,fillLength,9);
 		};
 		/**
 		 * 还原帧像素数据
@@ -79,7 +79,7 @@
 						num++;
 					}
 				}
-				if(num===5){
+				if(num===9){
 					animate(startNo);
 				}
 				this.terminate();
@@ -87,18 +87,25 @@
 		}
 		function animate(startNo){
 			context.clearRect(0, 0, width, height);
-			var imageData = context.drawImage(img,0,0,width,height,0,0,width,height);
 			body.appendChild(canvas);
 			setTimeout(function(){
 				context.clearRect(0, 0, width, height);
 				context.drawImage(img,0,1136,width,height,0,0,width,height);
 			},150);
+			setTimeout(function(){
+				context.clearRect(0, 0, width, height);
+				context.drawImage(img,0,1136,width,height,0,0,width,height);
+			},300);
+			setTimeout(function(){
+				context.clearRect(0, 0, width, height);
+				context.drawImage(img,0,2272,width,height,0,0,width,height);
+			},450);
 			for(var i=startNo;i<totalImageData.length;i++){
 				(function(index){
 					setTimeout(function(){
 						context.clearRect(0, 0, width, height);
 						context.putImageData(totalImageData[index], 0, 0, 0, 0, width, height);
-					},(index-2)*150);
+					},(index-3)*150);
 				})(i);
 			}
 		}
