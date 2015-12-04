@@ -52,7 +52,7 @@
 		//请输入上一帧的相关信息
 		let last = {
 			//src:'./images/three/6.png',
-			src:'./images/final-v0.0.4/7-reset.png',
+			src:'./images/final-v0.0.4/14-reset.png',
 			isReset:true,
 			width:933,
 			height:1039,
@@ -60,7 +60,7 @@
 		};
 		//请输入下一帧的相关信息
 		let next = {
-			src:'./images/three/8.png',
+			src:'./images/three/15.png',
 		};
 		//加载图片
 		let lastImg = new Image();
@@ -253,7 +253,7 @@
 	           	while(node){
 	           		node = node.next;
 	           		no++;
-	           		if(no%3===0){
+	           		if(no%3===0&&node){
 	           			let temp = {
 					        value: 255,
 					        previous: null,
