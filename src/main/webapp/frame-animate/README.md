@@ -1,6 +1,7 @@
 > &copy; Young 2015-11-05 18:49
 > Welcome to My [MarkdownNote](https://github.com/newbieYoung/MarkdownNote "MarkdownNote")
-> 迁移至 [PxDiffFrameAnimate](https://github.com/newbieYoung/PxDiffFrameAnimate)
+
+> 该项目已经迁移至 [PxDiffFrameAnimate](https://github.com/newbieYoung/PxDiffFrameAnimate)
 
 ### 版本说明
 
